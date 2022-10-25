@@ -7,13 +7,11 @@ const MockBEP20 = artifacts.require('libs/MockBEP20');
 contract('MasterChef', ([alice, bob, carol, dev, minter]) => {
     beforeEach(async () => {
         this.evt = await EvtToken.new({ from: minter });
-        this.evb = await EnvoysBar.new(this.evt.address, { from: minter });
         this.lp1 = await MockBEP20.new('LPToken', 'LP1', '1000000', { from: minter });
         this.lp2 = await MockBEP20.new('LPToken', 'LP2', '1000000', { from: minter });
         this.lp3 = await MockBEP20.new('LPToken', 'LP3', '1000000', { from: minter });
-        this.chef = await MasterChef.new(this.evt.address, this.evb.address, dev, '1000', '100', { from: minter });
+        this.chef = await MasterChef.new(this.evt.address, dev, '1000', '100', { from: minter });
         await this.evt.transferOwnership(this.chef.address, { from: minter });
-        await this.evb.transferOwnership(this.chef.address, { from: minter });
 
         await this.lp1.transfer(bob, '2000', { from: minter });
         await this.lp2.transfer(bob, '2000', { from: minter });
@@ -95,13 +93,10 @@ contract('MasterChef', ([alice, bob, carol, dev, minter]) => {
 
       await this.evt.approve(this.chef.address, '250', { from: alice });
       await this.chef.enterStaking('240', { from: alice }); //3
-      assert.equal((await this.evb.balanceOf(alice)).toString(), '240');
       assert.equal((await this.evt.balanceOf(alice)).toString(), '10');
       await this.chef.enterStaking('10', { from: alice }); //4
-      assert.equal((await this.evb.balanceOf(alice)).toString(), '250');
       assert.equal((await this.evt.balanceOf(alice)).toString(), '249');
       await this.chef.leaveStaking(250);
-      assert.equal((await this.evb.balanceOf(alice)).toString(), '0');
       assert.equal((await this.evt.balanceOf(alice)).toString(), '749');
 
     });

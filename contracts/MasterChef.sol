@@ -6,7 +6,6 @@ import '@envoysvision/envoys-swap-lib/contracts/token/BEP20/SafeBEP20.sol';
 import '@envoysvision/envoys-swap-lib/contracts/access/Ownable.sol';
 
 import "./EvtToken.sol";
-import "./EnvoysBar.sol";
 
 // import "@nomiclabs/buidler/console.sol";
 
@@ -61,8 +60,6 @@ contract MasterChef is Ownable {
 
     // The EVT TOKEN!
     EvtToken public evt;
-    // The SYRUP TOKEN!
-    EnvoysBar public evb;
     // Dev address.
     address public devaddr;
     // EVT tokens created per block.
@@ -87,13 +84,11 @@ contract MasterChef is Ownable {
 
     constructor(
         EvtToken _evt,
-        EnvoysBar _evb,
         address _devaddr,
         uint256 _evtPerBlock,
         uint256 _startBlock
     ) public {
         evt = _evt;
-        evb = _evb;
         devaddr = _devaddr;
         evtPerBlock = _evtPerBlock;
         startBlock = _startBlock;
@@ -220,7 +215,6 @@ contract MasterChef is Ownable {
         uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
         uint256 evtReward = multiplier.mul(evtPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
         evt.mint(devaddr, evtReward.div(10));
-        evt.mint(address(evb), evtReward);
         pool.accEvtPerShare = pool.accEvtPerShare.add(evtReward.mul(1e12).div(lpSupply));
         pool.lastRewardBlock = block.number;
     }
@@ -284,8 +278,6 @@ contract MasterChef is Ownable {
             user.amount = user.amount.add(_amount);
         }
         user.rewardDebt = user.amount.mul(pool.accEvtPerShare).div(1e12);
-
-        evb.mint(msg.sender, _amount);
         emit Deposit(msg.sender, 0, _amount);
     }
 
@@ -305,7 +297,6 @@ contract MasterChef is Ownable {
         }
         user.rewardDebt = user.amount.mul(pool.accEvtPerShare).div(1e12);
 
-        evb.burn(msg.sender, _amount);
         emit Withdraw(msg.sender, 0, _amount);
     }
 
@@ -321,7 +312,7 @@ contract MasterChef is Ownable {
 
     // Safe evt transfer function, just in case if rounding error causes pool to not have enough EVTs.
     function safeEvtTransfer(address _to, uint256 _amount) internal {
-        evb.safeEvtTransfer(_to, _amount);
+        evt.mint(_to, _amount);
     }
 
     // Update dev address by the previous dev.
