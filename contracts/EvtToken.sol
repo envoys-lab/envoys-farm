@@ -1,6 +1,6 @@
 pragma solidity 0.6.12;
 
-import "@pancakeswap/pancake-swap-lib/contracts/token/BEP20/BEP20.sol";
+import "@envoysvision/envoys-swap-lib/contracts/token/BEP20/BEP20.sol";
 
 // EvtToken with Governance.
 contract EvtToken is BEP20('EnvoysSwap Token', 'EVT') {
