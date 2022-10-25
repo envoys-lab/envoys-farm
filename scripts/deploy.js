@@ -18,42 +18,11 @@ async function main() {
     console.log("Account balance:", (await deployer.getBalance()).toString());
 
 
-    /*
-
-    MasterChief(
-        EvtToken _evt,
-        EnvoysBar _evb,
-        address _devaddr,
-        uint256 _evtPerBlock,
-        uint256 _startBlock
-    );
-
-    EnvoysBar(
-        EvtToken _evt
-    )
-    
-    SousChief(
-        IBEP20 _evb,
-        uint256 _rewardPerBlock,
-        uint256 _startBlock,
-        uint256 _endBlock
-    )
-
-    // evt -> transfer owner to MasterChief
-    // evb -> transfer owner to MasterChief
-    
-    */
-
-
     const envoysTokenConstructor = [];
     const envoysToken = await deploy("EvtToken", envoysTokenConstructor);
     
-    const envoysBarConstructor = [envoysToken.address];
-    const envoysBar = await deploy("EnvoysBar", envoysBarConstructor);
-
     const masterChefConstructor = [
         envoysToken.address,
-        envoysBar.address,
         deployer.address,
         "40000000000000000000",
         block.number + 1
@@ -61,7 +30,6 @@ async function main() {
     const master = await deploy("MasterChef", masterChefConstructor);
 
     const sousChefConstructor = [
-        envoysBar.address,
         "10000000000000000000",
         block.number + 1,
         block.number + 5000000
@@ -76,16 +44,9 @@ async function main() {
     await tx.wait();
     process.stdout.write(` OK\n`);
 
-    process.stdout.write("Transfer ownership EvbToken to MasterChef..");
-    tx = await envoysBar.transferOwnership(master.address);
-    process.stdout.write(`. ${tx.hash}`);
-    await tx.wait();
-    process.stdout.write(` OK\n\n`);
-
     console.log("MasterChef:", master.address);
     console.log("SousChef:", sous.address);
     console.log("EVT:", envoysToken.address);
-    console.log("EVB:", envoysBar.address);
 }
 
 main()

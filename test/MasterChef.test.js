@@ -1,6 +1,5 @@
 const { expectRevert, time } = require('@openzeppelin/test-helpers');
 const EvtToken = artifacts.require('EvtToken');
-const EnvoysBar = artifacts.require('EnvoysBar');
 const MasterChef = artifacts.require('MasterChef');
 const MockBEP20 = artifacts.require('libs/MockBEP20');
 

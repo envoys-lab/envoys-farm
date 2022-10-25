@@ -4,7 +4,6 @@ const EvtToken = artifacts.require('EvtToken');
 const MasterChef = artifacts.require('MasterChef');
 const MockBEP20 = artifacts.require('libs/MockBEP20');
 const Timelock = artifacts.require('Timelock');
-const EnvoysBar = artifacts.require('EnvoysBar');
 
 function encodeParameters(types, values) {
     const abi = new ethers.utils.AbiCoder();
@@ -64,10 +63,8 @@ contract('Timelock', ([alice, bob, carol, dev, minter]) => {
     it('should also work with MasterChef', async () => {
         this.lp1 = await MockBEP20.new('LPToken', 'LP', '10000000000', { from: minter });
         this.lp2 = await MockBEP20.new('LPToken', 'LP', '10000000000', { from: minter });
-        this.evb = await EnvoysBar.new(this.evt.address, { from: minter });
         this.chef = await MasterChef.new(this.evt.address, dev, '1000', '0', { from: alice });
         await this.evt.transferOwnership(this.chef.address, { from: alice });
-        await this.evb.transferOwnership(this.chef.address, { from: minter });
         await this.chef.add('100', this.lp1.address, true, { from: alice });
         await this.chef.transferOwnership(this.timelock.address, { from: alice });
         await expectRevert(
